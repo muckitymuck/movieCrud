@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 const {MongoClient, ObjectId} = require('mongodb')
 const { response } = require('express')
+const { request } = require('http')
 require('dotenv').config()
 const PORT = 8000
 
@@ -22,9 +23,9 @@ app.use(express.urlencoded({extended : true}))
 app.use(express.json())
 app.use(cors())
 
-app.get("/search", async (req, res) => {
+app.get("/search", async (request, response) => {
     try {
-        let results = await collection.aggregate([
+        let result = await collection.aggregate([
             {
                 "$Search" : {
                     "autocomplete" : {
@@ -38,6 +39,7 @@ app.get("/search", async (req, res) => {
                 }
             }
         ]).toArray()
+        response.send(result)
 
 
     } catch {
@@ -45,14 +47,15 @@ app.get("/search", async (req, res) => {
     }
 })
 
-app.get("/get/:id", async (req, res) => {
+app.get("/get/:id", async (request, response) => {
     try {
         let result = await collection.findOne({
             "_id" : ObjectId(request.params.id)
         })
-        res.send(result)
-        
+        response.send(result)
+
     }catch {
+        response.status(500).send({message: error.message})
 
     }
 })

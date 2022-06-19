@@ -45,7 +45,17 @@ app.get("/search", async (req, res) => {
     }
 })
 
-app.get("/get/:id")
+app.get("/get/:id", async (req, res) => {
+    try {
+        let result = await collection.findOne({
+            "_id" : ObjectId(request.params.id)
+        })
+        res.send(result)
+        
+    }catch {
+
+    }
+})
 
 
 app.listen(process.env.PORT || PORT, () => {
